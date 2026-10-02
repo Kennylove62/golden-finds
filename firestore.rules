@@ -37,20 +37,15 @@ service cloud.firestore {
     match /users/{userId} {
       allow create: if ownsUser(userId)
           && request.resource.data.uid == userId
-          && request.resource.data.email
-              == request.auth.token.email
-          && request.resource.data.role
-              in ['client', 'seller'];
+          && request.resource.data.email == request.auth.token.email
+          && request.resource.data.role in ['client', 'seller'];
 
       allow read: if ownsUser(userId);
 
       allow update: if ownsUser(userId)
-          && request.resource.data.uid
-              == resource.data.uid
-          && request.resource.data.role
-              == resource.data.role
-          && request.resource.data.email
-              == resource.data.email;
+          && request.resource.data.uid == resource.data.uid
+          && request.resource.data.role == resource.data.role
+          && request.resource.data.email == resource.data.email;
 
       allow delete: if false;
     }
@@ -76,8 +71,7 @@ service cloud.firestore {
           );
 
       allow create: if isSeller()
-          && request.resource.data.sellerId
-              == request.auth.uid
+          && request.resource.data.sellerId == request.auth.uid
           && request.resource.data.name is string
           && request.resource.data.name.size() >= 2
           && request.resource.data.description is string
@@ -86,8 +80,7 @@ service cloud.firestore {
           && request.resource.data.price > 0
           && request.resource.data.stock is int
           && request.resource.data.stock >= 0
-          && request.resource.data.currency
-              in ['BIF', 'USD', 'EUR']
+          && request.resource.data.currency in ['BIF', 'USD', 'EUR']
           && request.resource.data.categoryId is string
           && request.resource.data.categoryName is string
           && request.resource.data.imageBase64 is string
@@ -99,24 +92,35 @@ service cloud.firestore {
           && request.resource.data.isActive == true;
 
       allow update: if isSeller()
-          && resource.data.sellerId
-              == request.auth.uid
-          && request.resource.data.sellerId
-              == resource.data.sellerId
-          && request.resource.data.price is number
-          && request.resource.data.price > 0
-          && request.resource.data.stock is int
-          && request.resource.data.stock >= 0
-          && request.resource.data.currency
-              in ['BIF', 'USD', 'EUR']
-          && request.resource.data.imageBase64 is string
-          && request.resource.data.imageBase64 == ''
-          && request.resource.data.imageUrl is string
-          && request.resource.data.imageUrl.size() > 10;
+          && resource.data.sellerId == request.auth.uid
+          && request.resource.data.sellerId == resource.data.sellerId
+          && (
+            (
+              request.resource.data.diff(resource.data)
+                  .affectedKeys()
+                  .hasOnly([
+                    'stock',
+                    'updatedAt'
+                  ])
+              && request.resource.data.stock is int
+              && request.resource.data.stock >= 0
+            )
+            ||
+            (
+              request.resource.data.price is number
+              && request.resource.data.price > 0
+              && request.resource.data.stock is int
+              && request.resource.data.stock >= 0
+              && request.resource.data.currency in ['BIF', 'USD', 'EUR']
+              && request.resource.data.imageBase64 is string
+              && request.resource.data.imageBase64 == ''
+              && request.resource.data.imageUrl is string
+              && request.resource.data.imageUrl.size() > 10
+            )
+          );
 
       allow delete: if isSeller()
-          && resource.data.sellerId
-              == request.auth.uid;
+          && resource.data.sellerId == request.auth.uid;
     }
 
     match /carts/{userId} {
@@ -131,7 +135,6 @@ service cloud.firestore {
 
       allow delete: if ownsUser(userId);
     }
-
 
     match /favorites/{userId} {
       allow read: if ownsUser(userId);
@@ -172,8 +175,7 @@ service cloud.firestore {
             'createdAt',
             'updatedAt'
           ])
-          && request.resource.data.clientId
-              == request.auth.uid
+          && request.resource.data.clientId == request.auth.uid
           && request.resource.data.clientName is string
           && request.resource.data.clientPhone is string
           && request.resource.data.sellerId is string
@@ -191,10 +193,8 @@ service cloud.firestore {
           && request.resource.data.deliveryFee >= 0
           && request.resource.data.total is number
           && request.resource.data.total >= request.resource.data.subtotal
-          && request.resource.data.currency
-              in ['BIF', 'USD', 'EUR']
-          && request.resource.data.deliveryOption
-              in ['delivery', 'pickup']
+          && request.resource.data.currency in ['BIF', 'USD', 'EUR']
+          && request.resource.data.deliveryOption in ['delivery', 'pickup']
           && request.resource.data.deliveryLocation is string
           && request.resource.data.deliveryPhone is string
           && request.resource.data.deliveryNotes is string
@@ -242,8 +242,7 @@ service cloud.firestore {
             ||
             (
               resource.data.status == 'accepted'
-              && request.resource.data.status
-                  == 'completed'
+              && request.resource.data.status == 'completed'
             )
           );
 
@@ -264,8 +263,7 @@ service cloud.firestore {
           ])
           && request.resource.data.recipientId is string
           && request.resource.data.recipientId.size() > 0
-          && request.resource.data.senderId
-              == request.auth.uid
+          && request.resource.data.senderId == request.auth.uid
           && request.resource.data.type in [
             'new_order',
             'order_accepted',
@@ -290,8 +288,7 @@ service cloud.firestore {
               ).data.clientId == request.auth.uid
               && orderAfter(
                 request.resource.data.orderId
-              ).data.sellerId
-                  == request.resource.data.recipientId
+              ).data.sellerId == request.resource.data.recipientId
               && orderAfter(
                 request.resource.data.orderId
               ).data.status == 'pending'
@@ -305,8 +302,7 @@ service cloud.firestore {
               ).data.sellerId == request.auth.uid
               && orderAfter(
                 request.resource.data.orderId
-              ).data.clientId
-                  == request.resource.data.recipientId
+              ).data.clientId == request.resource.data.recipientId
               && orderAfter(
                 request.resource.data.orderId
               ).data.status == 'accepted'
@@ -320,8 +316,7 @@ service cloud.firestore {
               ).data.sellerId == request.auth.uid
               && orderAfter(
                 request.resource.data.orderId
-              ).data.clientId
-                  == request.resource.data.recipientId
+              ).data.clientId == request.resource.data.recipientId
               && orderAfter(
                 request.resource.data.orderId
               ).data.status == 'cancelled'
@@ -335,8 +330,7 @@ service cloud.firestore {
               ).data.sellerId == request.auth.uid
               && orderAfter(
                 request.resource.data.orderId
-              ).data.clientId
-                  == request.resource.data.recipientId
+              ).data.clientId == request.resource.data.recipientId
               && orderAfter(
                 request.resource.data.orderId
               ).data.status == 'completed'

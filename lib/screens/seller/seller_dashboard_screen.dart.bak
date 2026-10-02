@@ -2650,6 +2650,32 @@ class _SellerProductCard extends StatelessWidget {
                 ],
               ),
             ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 15),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: onEdit,
+                      icon: Icon(Icons.edit_outlined, size: 18),
+                      label: Text('Edit'),
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.redAccent,
+                        side: BorderSide(color: Colors.redAccent),
+                      ),
+                      onPressed: onDelete,
+                      icon: Icon(Icons.delete_outline_rounded, size: 18),
+                      label: Text('Delete'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
