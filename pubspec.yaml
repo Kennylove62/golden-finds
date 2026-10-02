@@ -1,0 +1,46 @@
+name: golden_finds
+description: "Golden Finds Firebase e-commerce application."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.12.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+  firebase_core: ^4.15.0
+  firebase_auth: ^6.7.0
+  cloud_firestore: ^6.10.0
+  image_picker: ^1.2.3
+  image: ^4.10.1
+  url_launcher: ^6.3.2
+  http: ^1.6.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.4
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/icon/golden_finds.png
+
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "assets/icon/golden_finds.png"
+  min_sdk_android: 21
+
+  web:
+    generate: true
+    image_path: "assets/icon/golden_finds.png"
+    background_color: "#0B0B0B"
+    theme_color: "#D6B35A"
